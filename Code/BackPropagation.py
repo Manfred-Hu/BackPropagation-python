@@ -21,7 +21,7 @@ Alfa = 0.01   # 和这个关系不大
 # 迭代次数：
 Run_num = 500
 
-# （2）文件读取：
+# （2）文件读取和数据处理：
 Data = np.loadtxt('../Data/iris.data', dtype=bytes, delimiter=',').astype(str)  # 读取的数据是‘字符串’格式的
 Num_all = Data.shape[0]   # 样本总的个数
 
@@ -61,8 +61,8 @@ X_train, Y_train = Data[Index_train, 0:4].T, Data[Index_train, 4]
 X_valid, Y_valid = Data[Index_valid, 0:4].T, Data[Index_valid, 4]
 X_test, Y_test = Data[Index_test, 0:4].T, Data[Index_test, 4]
 
-#################################  函数定义  #################################
-# 计算Loss：
+#################################  （3）函数定义  #################################
+# 3.1计算Loss：
 def cost_fun(X, Y, W1, W2, W3):
 # X：特征数据，每一行对应一个数据的特征
 # Y: 标签数据
@@ -95,7 +95,7 @@ def cost_fun(X, Y, W1, W2, W3):
     # 返回损失函数和正确率：
     return J, Precision
 
-# 返回矩阵的梯度：
+# 3.2返回矩阵的梯度：
 def back_pro(X, Y, W1, W2, W3, Alfa):
     global Show_gra
     # 应用梯度下降法对参数进行优化，默认batch=1
@@ -148,8 +148,9 @@ def back_pro(X, Y, W1, W2, W3, Alfa):
         W2 = W2 - Alfa * W2_gra
         W3 = W3 - Alfa * W3_gra
     return W1, W2, W3
+#############################################################################
 
-# 迭代优化模型
+# （4）迭代优化模型
 train_loss = []
 valid_loss = []
 W1, W2, W3 = W1_raw, W2_raw, W3_raw
@@ -167,7 +168,7 @@ for i in range(Run_num):
 print('\n  模型准确率：')
 print('  训练集：{}%； 验证集：{}%； 测试集：{}%。'.format(Precision_train*100, Precision_valid*100, Precision_test*100))
 
-# 绘图：
+# （5）绘图：
 plt.figure()
 plt.plot(train_loss, color='b', label='Train loss')
 plt.plot(valid_loss, color='r', label='Valid loss')
@@ -177,12 +178,12 @@ plt.ylabel('Loss')
 plt.legend()
 plt.show()
 
-# 使用train集中第一个样本，使用pytorch自动计算梯度：
+# （6）使用train集中第一个样本，使用pytorch自动计算梯度：
 x = X_train[:, 0]  # 特征
 y = Y_train[0]
 x = torch.tensor(x)
 y = torch.tensor(y)
-w1 = torch.tensor(W1_raw, requires_grad=True)  # 注意这里是小写的w
+w1 = torch.tensor(W1_raw, requires_grad=True)  # 注意这里变量名是小写的w
 w2 = torch.tensor(W2_raw, requires_grad=True)
 w3 = torch.tensor(W3_raw, requires_grad=True)
 # 正传：
